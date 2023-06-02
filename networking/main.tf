@@ -14,3 +14,17 @@ resource "aws_vpc" "mtv_vpc" {
         Name = "mtc_vpc${random_integer.random.id}"
     }  
 }
+
+resource "aws_subnet" "mtv_public_subnet" {
+    depends_on = [ aws_vpc.mtv_vpc ]
+    vpc_id = aws_vpc.mtv_vpc.id
+    count = length(var.public_sec)
+    map_public_ip_on_launch = true
+    cidr_block = var.public_sec[count.index]
+    availability_zone = ["eu-west-1a","eu-west-1b","eu-west-1c"][count.index]
+    tags = {
+      Name = "mtv_vpc-public${count.index + 1}"
+    }
+
+              
+}
