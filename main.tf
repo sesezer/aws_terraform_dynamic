@@ -4,6 +4,8 @@
 module "networking" {
     source = "./networking"
     vpc_cidr = "10.123.0.0/16"
-    public_sec = ["10.123.10.0/24","10.123.20.0/24"]
-    private_sec = ["10.123.11.0/24","10.123.21.0/24","10.123.31.0/24"]
+    public_sub_count = 2
+    private_sub_count = 3
+    public_sec = [for i in range(2,255,2): cidrsubnet("10.123.0.0/16",8,i)]
+    private_sec = [for i in range(1,255,2): cidrsubnet("10.123.0.0/16",8,i)]
 }

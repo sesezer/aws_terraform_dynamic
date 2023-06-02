@@ -18,7 +18,7 @@ resource "aws_vpc" "mtv_vpc" {
 resource "aws_subnet" "mtv_public_subnet" {
     depends_on = [ aws_vpc.mtv_vpc ]
     vpc_id = aws_vpc.mtv_vpc.id
-    count = length(var.public_sec)
+    count = var.public_sub_count
     map_public_ip_on_launch = true
     cidr_block = var.public_sec[count.index]
     availability_zone = ["eu-west-1a","eu-west-1b","eu-west-1c"][count.index]
@@ -31,7 +31,7 @@ resource "aws_subnet" "mtv_public_subnet" {
 resource "aws_subnet" "mtv_private_subnet" {
     depends_on = [ aws_vpc.mtv_vpc ]
     vpc_id = aws_vpc.mtv_vpc.id
-    count = length(var.private_sec)
+    count = var.private_sub_count
     availability_zone = ["eu-west-1a","eu-west-1b","eu-west-1c"][count.index]
     map_public_ip_on_launch = false
     cidr_block = var.private_sec[count.index]
