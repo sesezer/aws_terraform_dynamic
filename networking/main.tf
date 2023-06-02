@@ -28,3 +28,15 @@ resource "aws_subnet" "mtv_public_subnet" {
 
               
 }
+resource "aws_subnet" "mtv_private_subnet" {
+    depends_on = [ aws_vpc.mtv_vpc ]
+    vpc_id = aws_vpc.mtv_vpc.id
+    count = length(var.private_sec)
+    availability_zone = ["eu-west-1a","eu-west-1b","eu-west-1c"][count.index]
+    map_public_ip_on_launch = false
+    cidr_block = var.private_sec[count.index]
+    tags = {
+      Name = "mtv_vpc-private${count.index + 1}"
+    }
+      
+}
