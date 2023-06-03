@@ -83,16 +83,17 @@ resource "aws_route" "default_route" {
 ##############################################################
 ############## securty group #################################
 resource "aws_security_group" "mtv_sg" {
+    for_each = var.securty_groups
     vpc_id = aws_vpc.mtv_vpc.id
-    name = "public_sg"
-    description = "public securty group"
+    name = each.value.name
+    description = each.value.description
     dynamic "ingress" {
-        for_each = var.public_sg_protocol
+        for_each = each.value.ingress
         content {
           from_port = ingress.value.int
           to_port = ingress.value.ext
           protocol = ingress.value.protocol
-          cidr_blocks = var.access_ip
+          cidr_blocks = ingress.value.cidr_block
         }
       
     }
@@ -103,7 +104,17 @@ resource "aws_security_group" "mtv_sg" {
         protocol = "-1"
     }
     tags = {
-      Name = "public_sg"
+      Name = each.value.name
+    }
+  
+}
+
+resource "aws_db_subnet_group" "mtv_subnet_group" {
+    name = "mtv_rdssubnet_group"
+    subnet_ids = aws_subnet.mtv_private_subnet.*.id
+    count = var.db_subnet_group ? 1 : 0
+    tags = {
+      Name = "mtv_rdssubnet_group"
     }
   
 }
