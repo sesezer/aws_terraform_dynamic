@@ -86,11 +86,15 @@ resource "aws_security_group" "mtv_sg" {
     vpc_id = aws_vpc.mtv_vpc.id
     name = "public_sg"
     description = "public securty group"
-    ingress {
-        from_port = 22
-        to_port = 22
-        cidr_blocks = var.access_ip
-        protocol = "tcp"
+    dynamic "ingress" {
+        for_each = var.public_sg_protocol
+        content {
+          from_port = ingress.value.int
+          to_port = ingress.value.ext
+          protocol = ingress.value.protocol
+          cidr_blocks = var.access_ip
+        }
+      
     }
     egress {
         from_port = 0
