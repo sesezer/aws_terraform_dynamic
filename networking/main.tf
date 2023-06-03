@@ -5,6 +5,7 @@ resource "random_integer" "random" {
     max = 100
   
 }
+
 data "aws_availability_zones" "available" {}
 
 resource "aws_vpc" "mtv_vpc" {
@@ -15,6 +16,7 @@ resource "aws_vpc" "mtv_vpc" {
         Name = "mtc_vpc${random_integer.random.id}"
     }  
 }
+
 resource "random_shuffle" "az" {
     input = data.aws_availability_zones.available.names
     result_count = max(var.public_sub_count,var.private_sub_count)
@@ -35,6 +37,7 @@ resource "aws_subnet" "mtv_public_subnet" {
 
               
 }
+
 resource "aws_subnet" "mtv_private_subnet" {
     depends_on = [ aws_vpc.mtv_vpc ]
     vpc_id = aws_vpc.mtv_vpc.id
@@ -47,3 +50,32 @@ resource "aws_subnet" "mtv_private_subnet" {
     }
       
 }
+
+resource "aws_internet_gateway" "mtv_vpc" {
+    vpc_id = aws_vpc.mtv_vpc.id
+  
+}
+############## mtv route table ##############################
+resource "aws_route_table" "mtv_public" {
+    vpc_id = aws_vpc.mtv_vpc.id
+    tags = {
+        Name = "mtv_public"
+    }
+    
+}
+
+resource "aws_route_table_association" "public" {
+    count = var.public_sub_count
+    subnet_id = aws_subnet.mtv_public_subnet.*.id[count.index]
+    route_table_id = aws_route_table.mtv_public.id
+  
+}
+
+resource "aws_route" "default_route" {
+    route_table_id = aws_route_table.mtv_public.id
+    gateway_id = aws_internet_gateway.mtv_vpc.id
+    destination_cidr_block = "0.0.0.0/0"
+     
+}
+##############################################################
+
