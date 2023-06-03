@@ -81,4 +81,25 @@ resource "aws_route" "default_route" {
      
 }
 ##############################################################
-
+############## securty group #################################
+resource "aws_security_group" "mtv_sg" {
+    vpc_id = aws_vpc.mtv_vpc.id
+    name = "public_sg"
+    description = "public securty group"
+    ingress {
+        from_port = 22
+        to_port = 22
+        cidr_blocks = var.access_ip
+        protocol = "tcp"
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        cidr_blocks = ["0.0.0.0/0"]
+        protocol = "-1"
+    }
+    tags = {
+      Name = "public_sg"
+    }
+  
+}

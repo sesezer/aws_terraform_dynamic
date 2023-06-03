@@ -1,0 +1,1 @@
+variable "access_ip" {description = "access ips for public sec group"}
