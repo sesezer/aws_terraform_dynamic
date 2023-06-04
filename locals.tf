@@ -15,6 +15,7 @@ locals {
       ingress = {
         "80" = {int=80,ext=80,protocol="tcp",cidr_block=[var.access_ip]}
         "22" = {int=22,ext=22,protocol="tcp",cidr_block=[var.access_ip]}
+        "8000" = {int=8000,ext=8000,protocol="tcp",cidr_block=[var.access_ip]}
       }
     }
     private = {

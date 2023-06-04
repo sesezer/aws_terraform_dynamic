@@ -14,19 +14,19 @@ module "networking" {
     private_sec = [for i in range(1,255,2): cidrsubnet(local.vpc_cidr,8,i)]
 }
 
-# module "database" {
-#     source = "./database"
-#     db_storage = 10
-#     db_engine_version = "5.7.37"
-#     db_instance_class = "db.t2.micro"
-#     db_name = var.dbname
-#     db_username = var.dbusername
-#     db_password = var.dbpassword
-#     db_db_subnet_group_name = module.networking.db_subnet_group_name[0]
-#     db_securty_group_id = module.networking.db_securty_group_id
-#     db_identifier = "mtc-db"
-#     db_skip_final_snapshot = true
-# }
+module "database" {
+    source = "./database"
+    db_storage = 10
+    db_engine_version = "5.7.37"
+    db_instance_class = "db.t3.micro"
+    db_name = var.dbname
+    db_username = var.dbusername
+    db_password = var.dbpassword
+    db_db_subnet_group_name = module.networking.db_subnet_group_name[0]
+    db_securty_group_id = module.networking.db_securty_group_id
+    db_identifier = "mtc-db"
+    db_skip_final_snapshot = true
+}
 
 module "loadbalancer" {
     source = "./loadbalancer"
@@ -45,12 +45,17 @@ module "loadbalancer" {
 
 module "compute" {
     source = "./compute"
-    instance_count = 1
+    instance_count = 2
     public_sg = module.networking.db_securty_group_public
     instance_public_subnet = module.networking.public_subnets_mtv
     volume_size = 10
     instance_type = "t3.micro"
     key_name = "mtckey"
     mtc_publickey_path = "/home/sezer/.ssh/mtc_instance.pub"
-  
+    userdata_path = "${path.root}/userdata.tpl"
+    db_endpoint = module.database.db_endpoint  
+    db_user = var.dbusername
+    dbpassword = var.dbpassword
+    db_name = var.dbname
+    lb_target_group_arn = module.loadbalancer.target_group_arn
 }
