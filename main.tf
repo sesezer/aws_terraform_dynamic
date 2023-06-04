@@ -50,5 +50,7 @@ module "compute" {
     instance_public_subnet = module.networking.public_subnets_mtv
     volume_size = 10
     instance_type = "t3.micro"
+    key_name = "mtckey"
+    mtc_publickey_path = "/home/sezer/.ssh/mtc_instance.pub"
   
 }

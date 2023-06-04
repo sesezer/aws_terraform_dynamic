@@ -26,7 +26,13 @@ resource "aws_instance" "mtv_instance" {
         volume_size = var.volume_size
       
     }
+    key_name = aws_key_pair.mtv_key.key_name
     
     
   
+}
+resource "aws_key_pair" "mtv_key" {
+    key_name = var.key_name
+    public_key = file(var.mtc_publickey_path)
+    
 }
