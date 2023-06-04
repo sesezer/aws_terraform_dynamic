@@ -11,7 +11,11 @@ resource "aws_lb" "mtv_lb" {
 }
 
 resource "aws_alb_target_group" "mtv_tg" {
-    
+
+    lifecycle {
+      ignore_changes = [ name ]
+      create_before_destroy = true
+    }
     name = "mtv-lb-tg${substr(uuid(), 0, 3)}"
     port = var.tg_port # 80
     protocol = var.tg_protocol

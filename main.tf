@@ -42,3 +42,13 @@ module "loadbalancer" {
     listener_port = 80
     listener_protocol = "HTTP"
 }
+
+module "compute" {
+    source = "./compute"
+    instance_count = 1
+    public_sg = module.networking.db_securty_group_public
+    instance_public_subnet = module.networking.public_subnets_mtv
+    volume_size = 10
+    instance_type = "t3.micro"
+  
+}
