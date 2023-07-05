@@ -15,5 +15,7 @@ resource "aws_db_instance" "mtv_rds" {
     tags = {
       Name = "mtv_db"
     }
+    storage_type = "gp2"
+    
   
 }
